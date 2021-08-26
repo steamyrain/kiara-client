@@ -18,8 +18,8 @@ export interface IKegiatanHarianForm {
 const KHFDefaultValues: IKegiatanHarianForm = {
   Uraian: "",
   Lokasi: "",
-  TanggalWaktuAwal: DateTime.now(),
-  TanggalWaktuAkhir: DateTime.now(),
+  TanggalWaktuAwal: DateTime.now().startOf('minute'),
+  TanggalWaktuAkhir: DateTime.now().startOf('minute'),
 };
 
 const useStyles = makeStyles((theme) => ({
