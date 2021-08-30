@@ -1,18 +1,30 @@
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
 
-const KiaraAppBar = () => {
+interface KiaraAppBarProps {
+  appBarCName?: string;
+  menuButtonCName?: string;
+  menuButtonOnClick?: () => void;
+}
+
+const KiaraAppBar = (props: KiaraAppBarProps) => {
   return (
-    <AppBar position="absolute">
+    <AppBar position="fixed" className={props.appBarCName}>
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu">
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          className={props.menuButtonCName}
+          onClick={props.menuButtonOnClick}
+        >
           <MenuIcon />
         </IconButton>
       </Toolbar>
     </AppBar>
-  )
-}
+  );
+};
 
-export default KiaraAppBar
+export default KiaraAppBar;

@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     "& > *": {
-      margin: theme.spacing(4, 0),
+      margin: theme.spacing(2, 0),
     },
   },
 }));
@@ -51,9 +51,8 @@ const KegiatanHarianForm = () => {
     try {
       await axios.post("http://localhost:4000/kegiatan", data);
     } catch (e) {
-      console.error(e);
+      //do something if error
     }
-    console.log("success");
   };
   return (
     <div className={classes.kegiatanHarianFormWrapper}>
@@ -101,4 +100,4 @@ const KegiatanHarianForm = () => {
   );
 };
 
-export { KegiatanHarianForm as default };
+export default KegiatanHarianForm;

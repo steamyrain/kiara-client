@@ -23,6 +23,7 @@ const KiaraTextField = (props: KiaraTextFieldProps) => {
       helperText={error && error.message}
       multiline={props.multiLine ? props.multiLine : false}
       rows={props.rows ? props.rows : 1}
+      inputRef={ref}
       {...inputProps}
     />
   );
