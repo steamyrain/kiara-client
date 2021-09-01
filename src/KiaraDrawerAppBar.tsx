@@ -13,7 +13,8 @@ import { Link } from "react-router-dom";
 
 interface routeComponent {
   verboseName: string;
-  component: React.FunctionComponent;
+  component: (props?: any) => JSX.Element;
+  props?: Object;
 }
 export type DrawerRoute = { [route: string]: routeComponent };
 

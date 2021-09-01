@@ -51,6 +51,20 @@ const App = () => {
     kegiatanharian: {
       verboseName: "Kegiatan Harian",
       component: KiaraTable,
+      props: {
+        columns: [
+          { title: "ID", field: "KegiatanId" },
+          { title: "Waktu Awal", field: "TanggalWaktuAwal" },
+          { title: "Waktu Akhir", field: "TanggalWaktuAkhir" },
+          { title: "Uraian", field: "Uraian" },
+          { title: "Lokasi", field: "Lokasi" },
+          { title: "Keterangan", field: "Keterangan" },
+        ],
+      },
+    },
+    kegiatanharianform: {
+      verboseName: "Kegiatan Harian Form",
+      component: KegiatanHarianForm,
     },
   };
   return (
@@ -65,13 +79,14 @@ const App = () => {
               <Switch>
                 {Object.keys(routes).map((route) => {
                   let Component = routes[route].component;
+                  let { props, verboseName } = routes[route];
                   return (
                     <Route
-                      key={routes[route].verboseName}
+                      key={verboseName}
                       exact={route === ""}
                       path={`/${route}`}
                     >
-                      <Component />
+                      <Component {...props} />
                     </Route>
                   );
                 })}

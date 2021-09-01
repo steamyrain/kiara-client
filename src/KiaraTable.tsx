@@ -1,64 +1,104 @@
-import React, { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
+
+import MaterialTable, { Icons, Column } from "material-table";
 import {
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams,
-} from "@material-ui/data-grid";
+  AddBox,
+  Check,
+  Clear,
+  DeleteOutline,
+  ChevronRight,
+  Edit,
+  SaveAlt,
+  FilterList,
+  FirstPage,
+  LastPage,
+  ChevronLeft,
+  Search,
+  ArrowUpward,
+  Remove,
+  ViewColumn,
+} from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
-interface KiaraTableProps {}
+interface KiaraTableProps<RowData extends object> {
+  columns: Array<Column<RowData>>;
+  loadRowsData: () => Promise<Array<RowData>>;
+}
 
-interface KegiatanHarianRow {
-  id: string;
+type KiaraTableRowData = {
   KegiatanId: string;
   TanggalWaktuAwal: string;
   TanggalWaktuAkhir: string;
   Uraian: string;
   Lokasi: string;
   Keterangan: string;
-}
-
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ID" },
-  { field: "TanggalWaktuAwal", headerName: "Waktu Awal Kegiatan" },
-  { field: "TanggalWaktuAkhir", headerName: "Waktu Akhir Kegiatan" },
-  { field: "Uraian", headerName: "Uraian Kegiatan" },
-  { field: "Lokasi", headerName: "Lokasi Kegiatan" },
-  { field: "Keterangan", headerName: "Keterangan Kegiatan" },
-];
-
-const fetchRows = async () => {
-  let data;
-  try {
-    data = await axios.get("http://localhost:4000/kegiatan");
-    return data;
-  } catch (e) {
-    //do something if error
-    return undefined;
-  }
 };
 
-const KiaraTable = (props?: KiaraTableProps) => {
-  const [rows, setRows] = useState<Array<KegiatanHarianRow>>([]);
+const kiaraTableIcons: Icons = {
+  Add: forwardRef((props, ref) => <AddBox {...props} innerRef={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} innerRef={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} innerRef={ref} />),
+  Delete: forwardRef((props, ref) => (
+    <DeleteOutline {...props} innerRef={ref} />
+  )),
+  DetailPanel: forwardRef((props, ref) => (
+    <ChevronRight {...props} innerRef={ref} />
+  )),
+  Edit: forwardRef((props, ref) => <Edit {...props} innerRef={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} innerRef={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} innerRef={ref} />),
+  FirstPage: forwardRef((props, ref) => (
+    <FirstPage {...props} innerRef={ref} />
+  )),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} innerRef={ref} />),
+  NextPage: forwardRef((props, ref) => (
+    <ChevronRight {...props} innerRef={ref} />
+  )),
+  PreviousPage: forwardRef((props, ref) => (
+    <ChevronLeft {...props} innerRef={ref} />
+  )),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} innerRef={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} innerRef={ref} />),
+  SortArrow: forwardRef((props, ref) => (
+    <ArrowUpward {...props} innerRef={ref} />
+  )),
+  ThirdStateCheck: forwardRef((props, ref) => (
+    <Remove {...props} innerRef={ref} />
+  )),
+  ViewColumn: forwardRef((props, ref) => (
+    <ViewColumn {...props} innerRef={ref} />
+  )),
+};
+
+const KiaraTable = ({ columns }: KiaraTableProps<KiaraTableRowData>) => {
+  let [data, setData] = useState<Array<KiaraTableRowData>>([]);
+  const history = useHistory();
+  let handleAddButton = () => history.push("/kegiatanharianform");
   useEffect(() => {
-    fetchRows().then(
-      (kegiatan) => {
-        kegiatan !== undefined
-          ? (function () {
-              (kegiatan.data as Array<KegiatanHarianRow>).map(
-                (value) => (value["id"] = value.KegiatanId)
-              );
-              setRows(kegiatan.data);
-            })()
-          : setRows([]);
+    axios.get("http://localhost:4000/kegiatan").then(
+      (value) => {
+        setData(value.data as Array<KiaraTableRowData>);
       },
-      (reason: any) => {}
+      (reason: any) => {
+        /*error fetching data*/
+      }
     );
   }, []);
   return (
-    <div style={{ height: "40vh", width: "100%" }}>
-      <DataGrid columns={columns} rows={rows} />
-    </div>
+    <MaterialTable
+      title="Kegiatan Harian"
+      icons={kiaraTableIcons}
+      columns={columns}
+      data={data}
+      actions={[
+        {
+          icon: AddBox,
+          position: "toolbar",
+          onClick: handleAddButton,
+        },
+      ]}
+    />
   );
 };
 
