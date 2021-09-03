@@ -17,6 +17,7 @@ import {
   ArrowUpward,
   Remove,
   ViewColumn,
+  Print,
 } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
@@ -96,6 +97,36 @@ const KiaraTable = ({ columns }: KiaraTableProps<KiaraTableRowData>) => {
           icon: AddBox,
           position: "toolbar",
           onClick: handleAddButton,
+          tooltip: "Tambah Kegiatan Harian",
+        },
+        {
+          icon: Print,
+          onClick: async (event, rowData) => {
+            await axios
+              .get(
+                `http://localhost:4000/kegiatan/${
+                  (rowData as KiaraTableRowData).KegiatanId
+                }/print`,
+                {
+                  responseType: "blob",
+                }
+              )
+              .then((response) => {
+                //Create a Blob from the PDF Stream
+                const file = new Blob([response.data], {
+                  type: "application/pdf",
+                });
+                //Build a URL from the file
+                const fileURL = URL.createObjectURL(file);
+                //Open the URL on new Window
+                const pdfWindow = window.open();
+                pdfWindow!.location.href = fileURL;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          },
+          tooltip: "Print Kegiatan Harian",
         },
       ]}
     />
