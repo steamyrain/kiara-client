@@ -21,6 +21,7 @@ import {
 } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
+import { DateTime } from "luxon";
 
 interface KiaraTableProps<RowData extends object> {
   columns: Array<Column<RowData>>;
@@ -77,8 +78,17 @@ const KiaraTable = ({ columns }: KiaraTableProps<KiaraTableRowData>) => {
   const history = useHistory();
   let handleAddButton = () => history.push("/kegiatanharianform");
   useEffect(() => {
-    axios.get("http://localhost:4000/kegiatan").then(
+    axios.get<Array<KiaraTableRowData>>("http://localhost:4000/kegiatan").then(
       (value) => {
+        value.data.map((value) => {
+          value.TanggalWaktuAkhir = DateTime.fromISO(value.TanggalWaktuAkhir, {
+            locale: "id",
+          }).toLocaleString(DateTime.DATETIME_MED);
+          value.TanggalWaktuAwal = DateTime.fromISO(value.TanggalWaktuAwal, {
+            locale: "id",
+          }).toLocaleString(DateTime.DATETIME_MED);
+          return value;
+        });
         setData(value.data as Array<KiaraTableRowData>);
       },
       (reason: any) => {
