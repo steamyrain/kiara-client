@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import KiaraDateTimePicker from "./KiaraDateTimePicker";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useForm, SubmitHandler } from "react-hook-form";
 import KiaraTextField from "./KiaraTextField";
+import KiaraSelect, { IMenuItemProps } from "./KiaraSelect";
 import axios from "axios";
 
 export interface IKegiatanHarianForm {
@@ -13,6 +14,17 @@ export interface IKegiatanHarianForm {
   TanggalWaktuAwal: DateTime;
   TanggalWaktuAkhir: DateTime;
   Keterangan?: string;
+  TenagaKerjas: Array<ITenagaKerja>;
+}
+
+interface ITenagaKerja {
+  TenagaKerjaId: string;
+  JobName: string;
+  Jumlah: string;
+}
+
+interface TenagaKerjaInputPort extends IMenuItemProps {
+  Jenis: string;
 }
 
 const KHFDefaultValues: IKegiatanHarianForm = {
@@ -20,6 +32,7 @@ const KHFDefaultValues: IKegiatanHarianForm = {
   Lokasi: "",
   TanggalWaktuAwal: DateTime.now().startOf("minute"),
   TanggalWaktuAkhir: DateTime.now().startOf("minute"),
+  TenagaKerjas: [],
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +54,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const KegiatanHarianForm = () => {
+  const [open, setOpen] = useState(false);
+  const [tenagaKerjas, setTenagaKerjas] = useState<Array<TenagaKerjaInputPort>>(
+    []
+  );
   const classes = useStyles();
   const { control, handleSubmit } = useForm<IKegiatanHarianForm>({
     defaultValues: KHFDefaultValues,
@@ -54,6 +71,28 @@ const KegiatanHarianForm = () => {
       //do something if error
     }
   };
+  useEffect(() => {
+    axios
+      .get<Array<TenagaKerjaInputPort>>(
+        "http://localhost:4000/tenagakerja/jenis"
+      )
+      .then(
+        (value) => {
+          setTenagaKerjas(
+            value.data.map((value) => {
+              return {
+                Jenis: value.Jenis,
+                value: value.Jenis,
+                label: value.Jenis,
+              };
+            })
+          );
+        },
+        (reason: any) => {
+          /*error fetching data*/
+        }
+      );
+  }, []);
   return (
     <div className={classes.kegiatanHarianFormWrapper}>
       <div>
@@ -93,6 +132,23 @@ const KegiatanHarianForm = () => {
           label={"Keterangan Kegiatan"}
           multiLine={true}
           rows={4}
+        />
+        <KiaraSelect
+          inputLabelId={"tenaga-kerja__label"}
+          inputLabelLabel={"Tenaga Kerja"}
+          selectId={"tenaga-kerja__select"}
+          selectLabelId={"tenaga-kerja__label"}
+          open={open}
+          onOpen={() => {
+            setOpen(true);
+          }}
+          onClose={() => {
+            setOpen(false);
+          }}
+          onChange={() => {
+            console.log("changed");
+          }}
+          items={tenagaKerjas}
         />
         <input type="submit" />
       </form>
